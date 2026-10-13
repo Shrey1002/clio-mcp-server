@@ -1,0 +1,21 @@
+/** Clio returns only id+etag unless `fields` is sent, and allows just ONE level of nesting. */
+export const FIELDS = {
+  user: "id,etag,name,first_name,last_name,email,enabled,subscription_type",
+  matter: "id,etag,display_number,description,status,billing_method,open_date,close_date,billable,client{id,name},practice_area{id,name},responsible_attorney{id,name}",
+  contact: "id,etag,name,type,primary_email_address,primary_phone_number,is_client",
+  activity: "id,etag,type,date,quantity,quantity_in_hours,price,total,note,billed,non_billable,matter{id,display_number},user{id,name}",
+  task: "id,etag,name,description,status,priority,due_at,matter{id,display_number},assignee{id,name}",
+  calendar_entry: "id,etag,summary,start_at,end_at,all_day,location,matter{id,display_number}",
+  bill: "id,etag,number,state,issued_at,due_at,total,balance,paid,due",
+  note: "id,etag,type,subject,detail,date,matter{id,display_number},contact{id,name}",
+  document: "id,etag,name,created_at,updated_at,parent{id,type}",
+  practice_area: "id,etag,name,code",
+  activity_description: "id,etag,name,type",
+  custom_field: "id,etag,name,parent_type,field_type,displayed,required",
+  outstanding_balance: "id,total_outstanding_balance,last_payment_date,newest_issued_bill_due_date,contact{id,name}",
+  trust_line_item: "id,date,total,type,matter{id,display_number},client{id,name}",
+  bank_account: "id,etag,name,type,balance,currency",
+  bank_transaction: "id,date,amount,description,type,bank_account{id,name}",
+  allocation: "id,date,amount,status,matter{id,display_number},bill{id,number}",
+  custom_field_values: "custom_field_values{id,field_name,field_type,value,custom_field}",
+} as const;

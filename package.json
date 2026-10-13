@@ -1,0 +1,38 @@
+{
+  "name": "clio-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for the Clio Manage v4 API (read-first, gated writes)",
+  "type": "module",
+  "bin": {
+    "clio-mcp-server": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"require(\\\"fs\\\").chmodSync(\\\"dist/index.js\\\",0o755)\"",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx src/index.ts",
+    "auth": "node dist/auth/auth-cli.js",
+    "test": "vitest run",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "dotenv": "^18.0.7",
+    "open": "^11.0.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

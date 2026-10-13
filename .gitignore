@@ -1,0 +1,7 @@
+.env
+.clio_tokens*
+tokens.json
+dist
+node_modules
+*.log
+audit*.jsonl
