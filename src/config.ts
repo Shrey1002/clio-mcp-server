@@ -31,6 +31,10 @@ const EnvSchema = z.object({
   CLIO_DISABLE_UPDATE: bool(true),
   CLIO_DISABLE_DELETE: bool(true),
   CLIO_REQUIRE_CONFIRM: bool(true),
+  // How flagged (suspected prompt-injection) text is handled: keep it with warnings, or withhold it.
+  CLIO_UNTRUSTED_TEXT_MODE: z.preprocess(emptyToUndef, z.enum(["flag", "redact"]).default("flag")),
+  // What happens to create/update/delete once a read returned flagged text: ask the human, refuse, or only warn.
+  CLIO_INJECTION_POLICY: z.preprocess(emptyToUndef, z.enum(["approve", "block", "warn"]).default("approve")),
   CLIO_DEFAULT_ATTORNEY_ID: z.preprocess(emptyToUndef, z.coerce.number().int().positive().optional()),
   CLIO_AUDIT_LOG_PATH: z.preprocess(emptyToUndef, z.string().optional()),
 });
@@ -53,6 +57,8 @@ export interface Config {
   disableUpdate: boolean;
   disableDelete: boolean;
   requireConfirm: boolean;
+  untrustedTextMode: "flag" | "redact";
+  injectionPolicy: "approve" | "block" | "warn";
   defaultAttorneyId?: number;
   auditLogPath?: string;
 }
@@ -90,6 +96,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     disableUpdate: e.CLIO_DISABLE_UPDATE,
     disableDelete: e.CLIO_DISABLE_DELETE,
     requireConfirm: e.CLIO_REQUIRE_CONFIRM,
+    untrustedTextMode: e.CLIO_UNTRUSTED_TEXT_MODE,
+    injectionPolicy: e.CLIO_INJECTION_POLICY,
     defaultAttorneyId: e.CLIO_DEFAULT_ATTORNEY_ID,
     auditLogPath: e.CLIO_AUDIT_LOG_PATH,
   };

@@ -30,7 +30,8 @@ describe("outbound bodies contain EXACTLY the expected keys (Clio silently drops
     expect(buildNoteBody({ type: "Contact", contact_id: 2, subject: "s", detail: "d" })).toEqual({ type: "Contact", subject: "s", detail: "d", contact: { id: 2 } });
   });
   it("task / calendar", () => {
-    expect(buildTaskBody({ name: "n", priority: "High", due_at: "2026-10-12", matter_id: 1, assignee_id: 2 })).toEqual({ name: "n", priority: "High", due_at: "2026-10-12", matter: { id: 1 }, assignee: { id: 2, type: "User" } });
+    expect(buildTaskBody({ name: "n", priority: "High", due_at: "2026-10-12", matter_id: 1, assignee_id: 2 })).toEqual({ name: "n", priority: "High", description: "n", due_at: "2026-10-12", matter: { id: 1 }, assignee: { id: 2, type: "User" } });
+    expect(buildTaskBody({ name: "n", priority: "Low", description: "d" }).description).toBe("d"); // API requires description
     expect(Object.keys(buildCalendarBody({ summary: "s", start_at: "a", end_at: "b", calendar_owner_id: 4 })).sort()).toEqual(["calendar_owner", "end_at", "start_at", "summary"]);
   });
   it("matter never carries top-level billing_method; attorneys are user ids; default attorney fallback", () => {

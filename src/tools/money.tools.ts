@@ -16,11 +16,17 @@ const money = (name: string, title: string, description: string, path: string, f
 
 export const moneyTools: ToolDef<any>[] = [
   money("clio_search_trust_line_items", "Search trust line items", "List trust line items.", "/trust_line_items.json", FIELDS.trust_line_item,
-    { matter_id: idField("Matter ID").optional(), client_id: idField("Client ID").optional() }, (a) => ({ matter_id: a.matter_id, client_id: a.client_id })),
+    { matter_id: idField("Matter ID").optional(), bill_id: idField("Bill ID").optional() }, (a) => ({ matter_id: a.matter_id, bill_id: a.bill_id })),
   money("clio_search_bank_accounts", "Search bank accounts", "List firm bank / trust accounts.", "/bank_accounts.json", FIELDS.bank_account,
-    { query: z.string().optional() }, (a) => ({ query: a.query })),
+    { type: z.string().optional().describe("Account type filter (as Clio defines it).") }, (a) => ({ type: a.type })),
   money("clio_search_bank_transactions", "Search bank transactions", "List bank transactions.", "/bank_transactions.json", FIELDS.bank_transaction,
-    { bank_account_id: idField("Bank account ID").optional() }, (a) => ({ bank_account_id: a.bank_account_id })),
+    { bank_account_id: idField("Bank account ID").optional(), matter_id: idField("Matter ID").optional(), client_id: idField("Client ID").optional() }, (a) => ({ bank_account_id: a.bank_account_id, matter_id: a.matter_id, client_id: a.client_id })),
   money("clio_search_allocations", "Search payment allocations", "List allocations of payments to bills.", "/allocations.json", FIELDS.allocation,
     { matter_id: idField("Matter ID").optional(), bill_id: idField("Bill ID").optional() }, (a) => ({ matter_id: a.matter_id, bill_id: a.bill_id })),
+  defineTool({
+    name: "clio_get_matter_protected_funds", title: "Matter protected funds", category: "READ",
+    description: "List the trust funds protected on a matter (GET /matters/{id}/protected_funds.json). READ-ONLY. May be hidden by the Clio user's permissions.",
+    schema: { matter_id: idField("Matter ID"), limit: limitField, page_token: pageTokenField },
+    run: async (a: any, ctx) => ctx.client.list(`/matters/${a.matter_id}/protected_funds.json`, { query: { fields: FIELDS.protected_fund }, limit: a.limit, pageToken: a.page_token }),
+  }),
 ];

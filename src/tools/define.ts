@@ -12,6 +12,8 @@ export interface Ctx {
   audit: AuditLog;
   gate: ConfirmGate;
   now: () => number;
+  /** Set when a read returned suspected prompt-injection text; state-changing tools then need human approval. */
+  security: { tainted: boolean; reasons: string[] };
   /** Cached id of the authenticated Clio user (for audit logs / defaults). */
   getUserId: () => Promise<number | undefined>;
 }

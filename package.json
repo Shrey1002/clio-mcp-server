@@ -1,6 +1,6 @@
 {
   "name": "clio-mcp-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for the Clio Manage v4 API (read-first, gated writes)",
   "type": "module",
   "bin": {

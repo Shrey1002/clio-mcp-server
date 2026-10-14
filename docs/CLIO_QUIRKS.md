@@ -30,10 +30,12 @@ Findings marked ★ come from live testing documented in `lawyered0/clio-mcp` (M
 | 24 | No idempotency key | confirm gate + 10-minute duplicate lookup | `write-tools.test` |
 | 25 | Visibility settings redact contacts/hours (≥4.0.8/9) | money tool descriptions; 404 message | n/a |
 
-## Not verified against a live account (check before relying on them)
-This build was developed without access to a Clio account. The items below follow the action plan or Clio's documented conventions but were **not** exercised live; the `tests/integration` suite covers some. Silent no-ops are possible if a filter name is wrong:
+## Verified against Clio's official OpenAPI spec (v4)
+After the first live tests, the full OpenAPI document (169 paths, 304 operations) was used to check this server's requests. Result:
 
-- Filter names: activities `start_date`/`end_date`/`status`, bills `issued_after`/`issued_before`/`state`, calendar entries `from`/`to`, notes `matter_id`/`contact_id`, documents `matter_id`, `created_since` on every list used for duplicate detection.
-- Field presets for endpoints beyond matters/contacts/activities (outstanding balances, trust line items, bank accounts/transactions, allocations, custom fields, documents). A bad field name returns 400, so it fails loudly.
-- Create bodies: calendar `calendar_owner{id}`, task `assignee{id,type:"User"}`, expense `expense_category{id}`, custom field value PATCH shape.
-- `clio_get_matter_protected_funds` from the plan is **not implemented**: no endpoint was confirmed. Add it after checking the API reference.
+- **Filters:** all filters used by activities, bills, calendar entries, notes, documents, tasks, matters and contacts exist, as does `created_since` on every list used for duplicate detection.
+- **Corrected after the check:** users and practice areas filter by `name` (not `query`); outstanding balances use `contact_id`; trust line items accept only `matter_id`/`bill_id`; activity descriptions have no text filter, so names are matched locally; the invalid `type` (trust line items) and `status` (allocations) response fields were replaced.
+- **Request bodies:** calendar `calendar_owner`, task `assignee`, expense `expense_category`, matter `custom_rate`, and `custom_field_values` all exist in the spec. The API **requires `description` on tasks**, so the server now sends the task name when none is given.
+- **Added:** `clio_get_matter_protected_funds` (`/matters/{id}/protected_funds.json`).
+
+Still checked only by running against a live account: the exact enum values the API accepts for some filters (for example activity `status`), and behavior that the spec does not describe (redaction, rate limits).

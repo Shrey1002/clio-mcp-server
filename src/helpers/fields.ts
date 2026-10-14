@@ -13,9 +13,10 @@ export const FIELDS = {
   activity_description: "id,etag,name,type",
   custom_field: "id,etag,name,parent_type,field_type,displayed,required",
   outstanding_balance: "id,total_outstanding_balance,last_payment_date,newest_issued_bill_due_date,contact{id,name}",
-  trust_line_item: "id,date,total,type,matter{id,display_number},client{id,name}",
+  trust_line_item: "id,date,total,note,matter{id,display_number},client{id,name},bill{id,number}",
   bank_account: "id,etag,name,type,balance,currency",
   bank_transaction: "id,date,amount,description,type,bank_account{id,name}",
-  allocation: "id,date,amount,status,matter{id,display_number},bill{id,number}",
+  allocation: "id,date,amount,description,payment_type,voided_at,matter{id,display_number},bill{id,number}",
+  protected_fund: "id,amount,bank_account_id,currency_id,matter_id,created_at",
   custom_field_values: "custom_field_values{id,field_name,field_type,value,custom_field}",
 } as const;

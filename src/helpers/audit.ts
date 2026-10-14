@@ -14,7 +14,7 @@ export function redact(v: any): any {
 export interface AuditEntry {
   tool: string;
   args: unknown;
-  outcome: "success" | "error" | "refused";
+  outcome: "success" | "error" | "refused" | "flagged";
   status?: number;
   clioUserId?: number;
   detail?: string;

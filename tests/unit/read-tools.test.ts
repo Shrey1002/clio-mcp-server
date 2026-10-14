@@ -88,6 +88,34 @@ describe("read tools: quirk regression", () => {
   });
 });
 
+describe("filters verified against Clio's OpenAPI spec", () => {
+  const q = async (tool: string, args: any) => { const t = await connect([list([{ id: 1, name: "AR Import" }, { id: 2, name: "Notary" }])]); const r = await t.call(tool, args); return { t, r, qs: t.calls[0]?.query }; };
+  it("users and practice areas filter by `name` (not the unsupported `query`)", async () => {
+    expect((await q("clio_search_users", { query: "Chris" })).qs.get("name")).toBe("Chris");
+    expect((await q("clio_search_users", { query: "Chris" })).qs.has("query")).toBe(false);
+    expect((await q("clio_search_practice_areas", { query: "Corp" })).qs.get("name")).toBe("Corp");
+  });
+  it("outstanding balances use contact_id", async () => {
+    expect((await q("clio_get_outstanding_balances", { client_id: 5 })).qs.get("contact_id")).toBe("5");
+  });
+  it("activity descriptions are matched locally (API has no text filter)", async () => {
+    const { r, qs } = await q("clio_search_activity_descriptions", { query: "ar imp" });
+    expect(qs.has("query")).toBe(false);
+    expect(r.json.items.map((i: any) => i.id)).toEqual([1]);
+  });
+  it("trust line items filter by matter_id/bill_id only", async () => {
+    const { qs } = await q("clio_search_trust_line_items", { matter_id: 3, bill_id: 4 });
+    expect([qs.get("matter_id"), qs.get("bill_id"), qs.has("client_id")]).toEqual(["3", "4", false]);
+  });
+  it("protected funds tool calls the matter sub-resource and always sends fields", async () => {
+    const t = await connect([list([{ id: 1, amount: 100 }])]);
+    const r = await t.call("clio_get_matter_protected_funds", { matter_id: 9 });
+    expect(r.isError).toBe(false);
+    expect(t.calls[0].path).toBe("/matters/9/protected_funds.json");
+    expect(t.calls[0].query.get("fields")).toContain("amount");
+  });
+});
+
 describe("truncation", () => {
   it("never exceeds the character cap and explains how to narrow", () => {
     const items = Array.from({ length: 2000 }, (_, i) => ({ id: i, note: "x".repeat(100) }));

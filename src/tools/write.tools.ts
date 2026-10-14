@@ -51,8 +51,7 @@ export function buildNoteBody(a: any) {
 }
 
 export function buildTaskBody(a: any) {
-  const body: Record<string, unknown> = { name: a.name, priority: a.priority };
-  if (a.description) body.description = a.description;
+  const body: Record<string, unknown> = { name: a.name, priority: a.priority, description: a.description ?? a.name }; // description is required by the API
   if (a.due_at) body.due_at = a.due_at;
   if (a.matter_id) body.matter = { id: a.matter_id };
   if (a.assignee_id) body.assignee = { id: a.assignee_id, type: "User" };
@@ -181,7 +180,7 @@ export const writeTools: ToolDef<any>[] = [
     name: "clio_create_task", title: "Create task", category: "WRITE",
     description: "Create a task. Optional matter and assignee (assignee is a User ID).",
     schema: {
-      name: z.string().trim().min(1).max(250), description: z.string().max(4000).optional(),
+      name: z.string().trim().min(1).max(250), description: z.string().max(4000).optional().describe("Clio requires a description; if omitted the task name is used."),
       priority: z.enum(["High", "Normal", "Low"]).default("Normal"),
       due_at: z.union([isoDate, isoDateTime]).optional().describe("Due date (YYYY-MM-DD) or ISO datetime."),
       matter_id: idField("Matter ID").optional(), assignee_id: idField("User ID of the assignee").optional(),

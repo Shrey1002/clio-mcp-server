@@ -99,18 +99,20 @@ export const readTools: ToolDef<any>[] = [
     description: "List Clio users (firm staff). Use to look up User IDs before creating matters, tasks or filtering activities.",
     path: "/users.json", fields: FIELDS.user,
     filters: { query: z.string().optional().describe("Name or email text."), enabled_only: z.boolean().optional().describe("Only enabled users.") },
-    toQuery: (a) => ({ query: a.query, enabled: a.enabled_only }),
+    toQuery: (a) => ({ name: a.query, enabled: a.enabled_only }),
   }),
   listTool({
     name: "clio_search_practice_areas", title: "Search practice areas", description: "List practice areas. (practice_area is metadata only and does not change billing.)",
     path: "/practice_areas.json", fields: FIELDS.practice_area,
-    filters: { query: z.string().optional().describe("Name text.") }, toQuery: (a) => ({ query: a.query }),
+    filters: { query: z.string().optional().describe("Name text.") }, toQuery: (a) => ({ name: a.query }),
   }),
   listTool({
     name: "clio_search_activity_descriptions", title: "Search activity descriptions", description: "List activity descriptions (standard time-entry narratives/rates). Optionally resolve the rate for a matter.",
     path: "/activity_descriptions.json", fields: FIELDS.activity_description,
-    filters: { query: z.string().optional(), rate_for_matter_id: idField("Resolve rates for this matter").optional() },
-    toQuery: (a) => ({ query: a.query, rate_for: a.rate_for_matter_id ? { matter_id: a.rate_for_matter_id } : undefined }),
+    filters: { query: z.string().optional().describe("Case-insensitive name match, applied to the returned page only (raise `limit` to scan more)."), rate_for_matter_id: idField("Resolve rates for this matter").optional() },
+    toQuery: (a) => ({ rate_for: a.rate_for_matter_id ? { matter_id: a.rate_for_matter_id } : undefined }),
+    // The API has no text filter for this endpoint, so match names locally (use a larger limit to scan more).
+    postFilter: (items, a) => (a.query ? items.filter((i) => String(i.name ?? "").toLowerCase().includes(String(a.query).toLowerCase())) : items),
   }),
 
   listTool({
@@ -182,6 +184,6 @@ export const readTools: ToolDef<any>[] = [
   listTool({
     name: "clio_get_outstanding_balances", title: "Outstanding client balances", description: "Outstanding balances by client (GET /outstanding_client_balances.json).",
     path: "/outstanding_client_balances.json", fields: FIELDS.outstanding_balance,
-    filters: { client_id: idField("Client contact ID").optional() }, toQuery: (a) => ({ client_id: a.client_id }),
+    filters: { client_id: idField("Client contact ID").optional() }, toQuery: (a) => ({ contact_id: a.client_id }),
   }),
 ];
