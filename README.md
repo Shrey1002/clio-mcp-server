@@ -444,3 +444,5 @@ When you ask Claude about Clio data, that data (client names, matters, billing d
 ### Credits and licence
 
 Released under the MIT licence. Many of the Clio API quirks handled here were first documented by [lawyered0/clio-mcp](https://github.com/lawyered0/clio-mcp) (MIT). The project structure was inspired by Intuit's QuickBooks Online MCP server.
+
+[![M8ven Score](https://m8ven.ai/badge/mcp/shrey1002-clio-mcp-server-3a0i8l?v=1c83ecfc6b0d6c2abb8c32181569c193)](https://m8ven.ai/mcp/shrey1002-clio-mcp-server-3a0i8l?s=readme)
